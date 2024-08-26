@@ -1,0 +1,12 @@
+Exercício 1:
+
+V(alimentação) = 5V
+V(LED) = 2V
+A(LED) = 20mA
+Ω = ?
+
+V = R.I
+R = V/I
+R = V(alimentação) – V(LED) / 20mA
+R = 3V / 0,020ª
+R = 150 Ω
