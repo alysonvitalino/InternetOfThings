@@ -1,5 +1,4 @@
-// C++ code
-//
+
 int LDR = 0;
 int LED = 9;
 void setup()
