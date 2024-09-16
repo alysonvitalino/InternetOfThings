@@ -1,19 +1,4 @@
-/* 
-	=======================================
-	Pratica 25 - Sensor Ultrassom HC-SR04 e Buzzer
-	
-	Autor: Alberto Tolentino
-	Criado em: 17/06/2020
-	
-	Demonstra o uso de sensor ultrassom
-	simplificado HC-SR04 no Arduino. Ativa o
-	Buzzer toda vez que sensor captar objeto
-	a certa distância.
-	
-	Base do código utilizado
-	https://www.tinkercad.com/things/5x4FbZMB0Wm
-	=======================================    
-*/
+
 #define G 8
 #define Y 9
 #define R 10
