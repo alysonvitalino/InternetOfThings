@@ -1,0 +1,110 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define endereco  0x27 
+#define colunas   16
+#define linhas    2
+
+LiquidCrystal_I2C lcd(endereco, colunas, linhas);
+
+int botao = 0;
+int poten1 = 0;
+int poten2 = 0;
+
+void setup()
+{
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(9, INPUT);
+  Serial.begin(9600);
+  lcd.init(); // INICIA A COMUNICAÇÃO COM O DISPLAY
+  lcd.backlight(); // LIGA A ILUMINAÇÃO DO DISPLAY
+  lcd.clear(); // LIMPA O DISPLAY
+}
+
+void loop()
+{
+  poten1 = analogRead(A0);
+  poten2 = analogRead(A1);
+  botao = digitalRead(9);
+  if(poten1 > 511 && poten2 > 511 && botao == LOW)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Para cima e");
+    lcd.setCursor(0,1);
+    lcd.print("Para direita");
+    Serial.println("Para cima e para direita");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 > 511 && poten2 < 511 && botao == LOW)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Para cima e");
+    lcd.setCursor(0,1);
+    lcd.print("para esquerda");
+    Serial.println("Para cima e para esquerda");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 < 511 && poten2 < 511 && botao == LOW)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Para baixo e");
+    lcd.setCursor(0,1);
+    lcd.print("para esquerda");
+    Serial.println("Para baixo e para esquerda");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 < 511 && poten2 > 511 && botao == LOW)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Para baixo e");
+    lcd.setCursor(0,1);
+    lcd.print("Para direita");
+    Serial.println("Para baixo e para direita");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 > 511 && poten2 > 511 && botao == HIGH)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Botao Para cima e");
+    lcd.setCursor(0,1);
+    lcd.print("Para direita");
+    Serial.println("Para cima e para direita");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 > 511 && poten2 < 511 && botao == HIGH)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Botao Para cima e");
+    lcd.setCursor(0,1);
+    lcd.print("para esquerda");
+    Serial.println("Para cima e para esquerda");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 < 511 && poten2 < 511 && botao == HIGH)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Botao Para baixo e");
+    lcd.setCursor(0,1);
+    lcd.print("para esquerda");
+    Serial.println("Para baixo e para esquerda");
+    delay(1000);
+    lcd.clear();
+  }
+  else if(poten1 < 511 && poten2 > 511 && botao == HIGH)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Botao Para baixo e");
+    lcd.setCursor(0,1);
+    lcd.print("Para direita");
+    Serial.println("Para baixo e para direita");
+    delay(1000);
+    lcd.clear();
+  }
+}
