@@ -1,2 +1,15 @@
-olá
-Bem vindos
+
+
+  	// Faz a leitura da tensao no Sensor de Temperatura
+	int SensorTempTensao=analogRead(A0);
+
+  	// Converte a tensao lida
+	float Tensao=SensorTempTensao*5;
+	Tensao/=1024;
+
+  	// Converte a tensao lida em Graus Celsius
+	float TemperaturaC=(Tensao-0.5)*100;
+  	
+  	//PRINTA A TEMPERATURA AMBIENTE
+    Serial.print(TemperaturaC);
+    Serial.println(" Graus Celsius");
