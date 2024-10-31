@@ -1,0 +1,142 @@
+#include <Wire.h>
+#include <Adafruit_SH1106.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+Adafruit_SH1106 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+#define SS_PIN 10
+#define RST_PIN 9
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+const int lm35Pin = A0;
+const int ldrPin = A1;
+const int buzzerPin = 3;
+const int touchPin = 2;
+
+// Estado da temperatura
+bool temperatureInCelsius = true;
+unsigned long previousMillis = 0;
+unsigned long alarmMillis = 0;
+bool alarmActive = false;
+int displayMode = 0; // 0: temperatura, 1: acesso, 2: config, 3: unidade
+
+void setup() {
+    Serial.begin(9600);
+    display.begin();
+    display.clearDisplay();
+
+    SPI.begin();
+    rfid.PCD_Init();
+
+    pinMode(buzzerPin, OUTPUT);
+    pinMode(touchPin, INPUT);
+}
+
+void loop() {
+    int temperature = readTemperature();
+    int lightLevel = readLightLevel();
+
+    // Atualização do display
+    if (millis() - previousMillis >= 100) {
+        previousMillis = millis();
+        displayTemperature(temperature);
+        
+        // Verifica nível de luz
+        if (lightLevel < 350) {
+            activateAlarm();
+        } else {
+            alarmActive = false;
+            digitalWrite(buzzerPin, LOW);
+            display.clearDisplay();
+        }
+    }
+
+    // Leitura do RFID
+    if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+        handleRFID();
+    }
+}
+
+int readTemperature() {
+    int reading = analogRead(lm35Pin);
+    return (reading * 500) / 1024; // Converte para Celsius
+}
+
+int readLightLevel() {
+    return analogRead(ldrPin);
+}
+
+void displayTemperature(int temperature) {
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(SH1106_WHITE);
+    display.setCursor(0, 0);
+    display.print("Temp: ");
+    display.print(temperatureInCelsius ? temperature : (temperature * 9 / 5) + 32);
+    display.print(temperatureInCelsius ? " C" : " F");
+    display.display();
+}
+
+void activateAlarm() {
+    if (!alarmActive) {
+        alarmActive = true;
+        alarmMillis = millis();
+    }
+    if (millis() - alarmMillis >= 500) {
+        digitalWrite(buzzerPin, !digitalRead(buzzerPin));
+        display.display();
+        alarmMillis = millis();
+    }
+}
+
+void handleRFID() {
+    // Verifica se o cartão é autorizado (implementar sua lógica)
+    if (isCardAuthorized()) {
+        displayMode = 1; // Acesso
+        showAccessScreen();
+    }
+}
+
+bool isCardAuthorized() {
+    // Implementar lógica para verificar se o cartão é autorizado
+    return true; // Simulação
+}
+
+void showAccessScreen() {
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print("Acesso Autorizado");
+    display.setCursor(0, 20);
+    display.print("1) Config");
+    display.setCursor(0, 40);
+    display.print("2) Voltar");
+    display.display();
+
+    // Lógica para capturar toque no sensor TTP224
+    if (digitalRead(touchPin) == HIGH) {
+        displayMode = 2; // Configuração
+        showConfigScreen();
+    }
+}
+
+void showConfigScreen() {
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print("1) Celsius");
+    display.setCursor(0, 20);
+    display.print("2) Fahrenheit");
+    display.display();
+
+    // Captura do toque
+    if (digitalRead(touchPin) == HIGH) {
+        temperatureInCelsius = true;
+        displayMode = 0; // Volta para temperatura
+    } else if (digitalRead(touchPin) == HIGH) {
+        temperatureInCelsius = false;
+        displayMode = 0; // Volta para temperatura
+    }
+}
